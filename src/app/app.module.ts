@@ -4,11 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { MyApp } from './app.component';
 
-import { AngularFireModule } from 'angularfire2';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
-import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
-
 import { AppSettings } from '../services/app-settings'
 import { ToastService } from '../services/toast-service'
 import { LoadingService } from '../services/loading-service'
@@ -23,9 +18,7 @@ import { GoogleAnalytics } from '@ionic-native/google-analytics';
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(MyApp),
-    AngularFireModule.initializeApp(AppSettings.FIREBASE_CONFIG),
-    AngularFireDatabaseModule, AngularFireAuthModule, AngularFirestoreModule
+    IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],

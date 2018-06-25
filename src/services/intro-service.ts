@@ -1,5 +1,4 @@
 import { IService } from './IService';
-import { AngularFireDatabase } from 'angularfire2/database';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { AppSettings } from './app-settings';
@@ -9,7 +8,7 @@ import { LoadingService } from './loading-service';
 @Injectable()
 export class IntroService {
 
-    constructor(public af: AngularFireDatabase, private loadingService: LoadingService) {}
+    constructor( private loadingService: LoadingService) {}
 
     getData = (): any => {
         return {
@@ -39,27 +38,12 @@ export class IntroService {
     load(): Observable<any> {
         var that = this;
         that.loadingService.show();
-        if (AppSettings.IS_FIREBASE_ENABLED) {
-            return new Observable(observer => {
-                this.af
-                    .object('intro')
-                    .valueChanges()
-                    .subscribe(snapshot => {
-                        that.loadingService.hide();
-                        observer.next(snapshot);
-                        observer.complete();
-                    }, err => {
-                        that.loadingService.hide();
-                        observer.error([]);
-                        observer.complete();
-                    });
-            });
-        } else {
+       
             return new Observable(observer => {
                 that.loadingService.hide();
                 observer.next(this.getData());
                 observer.complete();
             });
-        }
+       
     };
 }

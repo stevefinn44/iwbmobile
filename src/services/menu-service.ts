@@ -1,5 +1,4 @@
 import { IService } from './IService';
-import { AngularFireDatabase } from 'angularfire2/database';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { AppSettings } from './app-settings';
@@ -7,7 +6,7 @@ import { AppSettings } from './app-settings';
 @Injectable()
 export class MenuService implements IService {
 
-    constructor(public af: AngularFireDatabase) {}
+    constructor() {}
 
     getId = ():string => 'menu';
 
@@ -58,24 +57,11 @@ export class MenuService implements IService {
     };
 
     load(item: any): Observable<any> {
-      if (AppSettings.IS_FIREBASE_ENABLED) {
-        return new Observable(observer => {
-          this.af
-            .object('menu')
-            .valueChanges()
-            .subscribe(snapshot => {
-              observer.next(snapshot);
-              observer.complete();
-            }, err => {
-              observer.error([]);
-              observer.complete();
-            });
-        });
-      } else {
+      
         return new Observable(observer => {
           observer.next(this.getDataForTheme(item));
           observer.complete();
         });
-      }
+      
     }
 }

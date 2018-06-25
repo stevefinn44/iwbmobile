@@ -1,5 +1,4 @@
 import { IService } from './IService';
-import { AngularFireDatabase } from 'angularfire2/database';
 import { NavController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
