@@ -5,9 +5,12 @@ interface AuthConfig {
   apiUrl: string;
 }
 
-export const AUTH_CONFIG: AuthConfig = {
+export const AUTH_CONFIG = {
+  // Needed for Auth0 (capitalization: ID):
   clientID: 'kEBhcYy2nso_Oo_ZSW3YDhGRiDtvEYiC',
-  domain: 'inwhichbag.auth0.com',
-  callbackURL: 'http://localhost:8100/callback',
-  apiUrl: 'http://localhost:8518'
+  // Needed for Auth0Cordova (capitalization: Id):
+  clientId: 'kEBhcYy2nso_Oo_ZSW3YDhGRiDtvEYiC',
+  domain: 'inwhichbag.auth0.com', // e.g., you.auth0.com
+  packageIdentifier: 'com.auth0.ionic' // config.xml widget ID
 };
+

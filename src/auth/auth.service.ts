@@ -1,137 +1,69 @@
-import { Injectable } from '@angular/core';
-import { AUTH_CONFIG } from './auth0-variables';
+import { Injectable, NgZone } from '@angular/core';
+import { Storage } from '@ionic/storage';
 
-
-
-
-import { mergeMap } from 'rxjs/operators';
-
+// Import AUTH_CONFIG, Auth0Cordova, and auth0.js
+import { AUTH_CONFIG } from './auth.config';
+import Auth0Cordova from '@auth0/cordova';
 import * as auth0 from 'auth0-js';
-
-(window as any).global = window;
 
 @Injectable()
 export class AuthService {
+  Auth0 = new auth0.WebAuth(AUTH_CONFIG);
+  Client = new Auth0Cordova(AUTH_CONFIG);
+  accessToken: string;
+  user: any;
+  loggedIn: boolean;
+  loading = true;
 
-  auth0 = new auth0.WebAuth({
-    clientID: AUTH_CONFIG.clientID,
-    domain: AUTH_CONFIG.domain,
-    responseType: 'token id_token',
-    audience: AUTH_CONFIG.apiUrl,
-    redirectUri: AUTH_CONFIG.callbackURL,
-    scope: 'openid profile email'
-  });
-
-  public userProfile: any;
-  refreshSubscription: any;
-
-  constructor() {}
-
-  public login(): void {
-    this.auth0.authorize();
-  }
-
-  public handleAuthentication(): void {
-    this.auth0.parseHash((err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
-        //this.router.navigate(['/home']);
-      } else if (err) {
-        //this.router.navigate(['/home']);
-        console.log(err);
-        alert(`Error: ${err.error}. Check the console for further details.`);
-      }
+  constructor(
+    public zone: NgZone,
+    private storage: Storage
+  ) {
+    this.storage.get('profile').then(user => this.user = user);
+    this.storage.get('access_token').then(token => this.accessToken = token);
+    this.storage.get('expires_at').then(exp => {
+      this.loggedIn = Date.now() < JSON.parse(exp);
+      this.loading = false;
     });
   }
 
-  public getProfile(cb): void {
-    const accessToken = localStorage.getItem('access_token');
-    if (!accessToken) {
-      throw new Error('Access token must exist to fetch profile');
-    }
-
-    const self = this;
-    this.auth0.client.userInfo(accessToken, (err, profile) => {
-      if (profile) {
-        self.userProfile = profile;
-      }
-      cb(err, profile);
-    });
-  }
-
-  private setSession(authResult): void {
-    // Set the time that the access token will expire at
-    const expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
-    localStorage.setItem('access_token', authResult.accessToken);
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem('expires_at', expiresAt);
-
-    //this.scheduleRenewal();
-  }
-
-  public logout(): void {
-    // Remove tokens and expiry time from localStorage
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('expires_at');
-    //this.unscheduleRenewal();
-    this.userProfile = null;
-    // Go back to the home route
-    //this.router.navigate(['/']);
-  }
-
-  public isAuthenticated(): boolean {
-    // Check whether the current time is past the
-    // access token's expiry time
-    const expiresAt = JSON.parse(localStorage.getItem('expires_at') || '{}');
-    return new Date().getTime() < expiresAt;
-  }
-
-  /* public renewToken() {
-    this.auth0.checkSession({}, (err, result) => {
+  login() {
+    this.loading = true;
+    const options = {
+      scope: 'openid profile offline_access email'
+    };
+    // Authorize login request with Auth0: open login page and get auth results
+    this.Client.authorize(options, (err, authResult) => {
       if (err) {
-        alert(`Could not get a new token (${err.error}: ${err.error_description}).`);
-      } else {
-        alert(`Successfully renewed auth!`);
-        this.setSession(result);
+        throw err;
       }
-    });
-  } */
-
-  /* public scheduleRenewal() {
-    if(!this.isAuthenticated()) return;
-    this.unscheduleRenewal();
-
-    const expiresAt = JSON.parse(window.localStorage.getItem('expires_at'));
-   
-    
-    const source = of(expiresAt).pipe(
-      mergeMap(
-        expiresAt => {
-
-          const now = Date.now();
-
-          // Use the delay in a timer to
-          // run the refresh at the proper time
-        
-          return timer(Math.max(1, expiresAt - now));
+      // Set access token
+      this.storage.set('access_token', authResult.accessToken);
+      this.accessToken = authResult.accessToken;
+      // Set access token expiration
+      const expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
+      this.storage.set('expires_at', expiresAt);
+      // Set logged in
+      this.loading = false;
+      this.loggedIn = true;
+      // Fetch user's profile info
+      this.Auth0.client.userInfo(this.accessToken, (err, profile) => {
+        if (err) {
+          throw err;
         }
-      )
-    );
-
-    // Once the delay time from above is
-    // reached, get a new JWT and schedule
-    // additional refreshes
-    this.refreshSubscription = source.subscribe(() => {
-      this.renewToken();
-      this.scheduleRenewal();
+        this.storage.set('profile', profile).then(val =>
+          this.zone.run(() => this.user = profile)
+        );
+      });
     });
   }
 
-  public unscheduleRenewal() {
-    if(!this.refreshSubscription) return;
-    this.refreshSubscription.unsubscribe();
-  } */
-
+  logout() {
+    this.storage.remove('profile');
+    this.storage.remove('access_token');
+    this.storage.remove('expires_at');
+    this.accessToken = null;
+    this.user = null;
+    this.loggedIn = false;
+  }
 }
-
