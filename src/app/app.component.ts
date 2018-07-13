@@ -18,6 +18,7 @@ export class MyApp {
   pages: any;
   params: any;
   leftMenuTitle: string;
+  initialised: boolean = false;
 
   constructor(public platform: Platform,
     public menu: MenuController,
@@ -30,6 +31,7 @@ export class MyApp {
     this.menuService.load(null).subscribe(snapshot => {
       this.params = snapshot;
     });
+    
     if (AppSettings.SHOW_START_WIZARD) {
       this.presentProfileModal();
     }

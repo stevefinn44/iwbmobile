@@ -1,5 +1,5 @@
 <ion-split-pane when="md">
-  <ion-menu [content]="content" *ngIf="params != null">
+  <ion-menu [content]="content" *ngIf="initialised && params != null">
     <!-- Menu Main Top -->
     <ion-header padding background-size header-background-image
     [ngStyle]="{'background-image': 'url(' + params.background + ')'}">

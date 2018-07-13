@@ -12,12 +12,12 @@ export class HomeService {
 
     getData = () => {
         return {
-            "toolbarTitle": "Ionic3 UI Theme - Yellow Dark",
-            "title": "SAVE HOURS",
-            "subtitle": "OF DEVELOPING",
-            "subtitle2": "and make apps fast as light!",
-            "link":"http://csform.com/documentation-for-ionic-2-ui-template-app/",
-            "description": "For better understanding how our template works please read documentation.",
+            "toolbarTitle": "In Which Bag",
+            "title": "SAVE MONEY",
+            "subtitle": "SAVE THE PLANET",
+            "subtitle2": "and save time!",
+            "link":"",
+            "description": "",
             "background": "assets/images/background/29.jpg"
         };
     };

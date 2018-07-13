@@ -7,5 +7,6 @@ export const AppSettings = Object.freeze({
       },
     "MAP_KEY":{
        "apiKey":"AIzaSyCB7jsMv0hjwkVRan7vZZ9hDlI-dQNZRV8"
-    }
+    },
+    "Initialised": false
  });
