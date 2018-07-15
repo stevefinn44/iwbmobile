@@ -17,8 +17,8 @@ export class MyApp {
   rootPage = "HomePage";
   pages: any;
   params: any;
-  leftMenuTitle: string;
-  initialised: boolean = false;
+  //leftMenuTitle: string;
+  initialised: boolean = true;
 
   constructor(public platform: Platform,
     public menu: MenuController,
@@ -27,11 +27,12 @@ export class MyApp {
     this.initializeApp();
 
     this.pages = menuService.getAllThemes();
-    this.leftMenuTitle = menuService.getTitle();
+    //this.leftMenuTitle = menuService.getTitle();
     this.menuService.load(null).subscribe(snapshot => {
+
       this.params = snapshot;
     });
-    
+
     if (AppSettings.SHOW_START_WIZARD) {
       this.presentProfileModal();
     }
@@ -55,7 +56,10 @@ export class MyApp {
   openPage(page) {
     // close the menu when clicking a link from the menu
     // navigate to the new page if it is not the current page
+
+    console.log(`Page: ${JSON.stringify(page)}`);
     if (page.singlePage) {
+
       this.menu.open();
       this.nav.push(this.getPageForOpen(page.theme), {
         service: this.getServiceForPage(page.theme),

@@ -213,16 +213,7 @@ export class ItemsPage {
   }
 
   openPage(page: any) {
-      if (AppSettings.SUBSCRIBE) {
-        if (this.mailChimpService.showMailChimpForm()) {
-          this.mailChimpService.setMailChimpForm(false);
-          this.showPrompt();
-        } else {
-          this.navigation(page);
-        }
-      } else {
-        this.navigation(page);
-      }
+      this.navigation(page);
   }
 
   navigation(page: any) {
@@ -239,7 +230,7 @@ export class ItemsPage {
     }
   }
 
-    showPrompt() {
+    /* showPrompt() {
         let prompt = this.alertCtrl.create({
             title: 'STAY TUNED FOR NEW <br> THEMES AND FREEBIES',
             message: "SUBSCRIBE TO <br> OUR NEWSLETTER",
@@ -275,7 +266,7 @@ export class ItemsPage {
             ]
         });
         prompt.present();
-    }
+    } */
 
     setGoogleAnalytics() {
         if (window.location.hostname != "localhost") {
